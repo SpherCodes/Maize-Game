@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sink Hero</title>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+    <script type="module" src="/js/Client.js"></script>
+
+</head>
+<body>
+    <!-- <canvas id="backgroundCanvas" width="800" height="600"></canvas> -->
+    <div id="game-container"style="display: none;">
+        <div  class="info-bar">
+            <div class="player-info">
+                <span >Player:</span> <span id="player-name"></span>
+            </div>
+            <div class="player-info">
+                <span>Points:</span> <span id="player-points"></span>
+            </div>
+            <div class="player-info">
+                <span >Round:</span> <span id="current-round"></span>
+            </div>
+            <div class="player-info ">
+                <span >Time:</span> <span id="time-left"></span>
+            </div>
+        </div>
+        <div class="canvas-container">
+        </div>
+    </div>
+    
+
+    <div class="container" id="Login-Conteiner">
+        <div class="">
+            <div>
+                <h1 class="">Sink Hero</h1>
+                <div id="joinSection">
+                    <input type="text" id="gameId"  placeholder="Game ID">
+                    <input type="text" id="username" placeholder="Username">
+                    <div id="errorMessage"></div>
+                    <div id="joinButtonsection">
+                        <button id="joinGame" >Start</button>
+                        <button id="becomeHost">Watch</button>
+                        <button id="permissionButton" class="btn btn-info" style="display: none;">Grant Permissions</button>
+                    </div>
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="winner-container" class="container mt-5" style="display: none;">
+        <div class="row justify-content-center">
+                <h2 id="gameOverMessage" class="text-center" style="display: none"></h2>
+                <div id="winner" class="points-table">
+                    <!-- Cards will be inserted here -->
+                </div>
+                <div id="Next-round-errorMessage" class="text-danger"></div>
+                <button id="next-round-button"  style="display: none">Next Round</button>
+                <button id="playAgainButton" style="display: none">Play Again</button>
+        </div>
+    </div>
+</body>
+</html>
+ 

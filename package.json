@@ -1,0 +1,24 @@
+{
+  "name": "sink-hero",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./index.js --exec babel-node -e js",
+    "test": "echo \"No tests defined\""
+  },
+  "keywords": [],
+  "author": "Siphesihle Mvelase",
+  "license": "ISC",
+  "description": "online maize game",
+  "dependencies": {
+    "express": "^4.21.0",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.25.6",
+    "@babel/core": "^7.25.2",
+    "@babel/node": "^7.25.0",
+    "@babel/preset-env": "^7.25.4",
+    "nodemon": "^3.1.6"
+  }
+}
