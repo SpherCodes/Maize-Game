@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     let generatedMaze;
     let velocity = { x: 0, y: 0 };
     let acceleration = { x: 0, y: 0 };
-    const friction = 0.1;
+    const friction = 0.8;
     let lastUpdate = Date.now();
     let end;
     let previous_positions = {};
@@ -53,51 +53,46 @@ document.addEventListener("DOMContentLoaded",()=>{
         requestAnimationFrame(() => animate(game ));  // Start animation loop
     }
 
-        // Function to check collisions with maze walls
-        // Function to check collisions with maze walls
-    function checkCollisions(player,newX, newY) {
-        const cellX = Math.floor(newX);
-        const cellY = Math.floor(newY);
-        let bouncefactor = 1;
-    
-        // Check for out-of-bounds
-        if (cellX < 0 || cellX >= cols || cellY < 0 || cellY >= rows) {
-            console.log(' ball position is out of bounds');
-            return { newX: player.position.x, newY: player.position.y };
-            
-        }
-        // Horizontal wall collisions
-        if (velocity.x > 0) {
-            if (generatedMaze[cellX][cellY].walls.right && (newX + ballRadius / cellSize) > (cellX + 1)) {
-                newX = cellX + 1 - ballRadius / cellSize;
-                velocity.x = -velocity.x * bouncefactor; // Reverse horizontal velocity
-            }
-        }
-        else if (velocity.x < 0) {
-            if (generatedMaze[cellX][cellY].walls.left && (newX - ballRadius / cellSize) < cellX) {
-                newX = cellX + ballRadius / cellSize;
-                velocity.x = -velocity.x * bouncefactor; // Reverse horizontal velocity
-            }
-        }
-    
-        // Vertical wall collisions
-        if (velocity.y > 0) {
-            if (generatedMaze[cellX][cellY].walls.bottom && (newY + ballRadius / cellSize) > (cellY + 1)) {
-                newY = cellY + 1 - ballRadius / cellSize;
-                velocity.y = -velocity.y * bouncefactor; // Reverse vertical velocity
-            }
-        }
-        else if (velocity.y < 0) {
-            if (generatedMaze[cellX][cellY].walls.top && (newY - ballRadius / cellSize) < cellY) {
-                newY = cellY + ballRadius / cellSize;
-                velocity.y = -velocity.y *bouncefactor; // Reverse vertical velocity
-            }
-        }
-    
-        return { newX, newY };
+    // Function to check collisions with maze walls
+function checkCollisions(player, newX, newY) {
+    const cellX = Math.floor(player.position.x / cellSize);
+    const cellY = Math.floor(player.position.y / cellSize);
+    let bounceFactor = 0.5; // Reduced bounce to prevent infinite bouncing
+
+    if (newX < 0 || newX >= cols * cellSize || newY < 0 || newY >= rows * cellSize) {
+        return { newX: player.position.x, newY: player.position.y };
     }
-        
-    function ConfigureMaze(maze,cellSize,canvas,ctx){
+
+    // Horizontal wall collisions
+    if (velocity.x > 0) { // Moving right
+        if (generatedMaze[cellX][cellY].walls.right && (newX + ballRadius) > (cellX + 1) * cellSize) {
+            newX = (cellX + 1) * cellSize - ballRadius; // Move ball to the edge of the cell
+            velocity.x = -velocity.x * bounceFactor; // Reverse and dampen horizontal velocity
+        }
+    } else if (velocity.x < 0) { // Moving left
+        if (generatedMaze[cellX][cellY].walls.left && (newX - ballRadius) < cellX * cellSize) {
+            newX = cellX * cellSize + ballRadius; // Move ball to the edge of the cell
+            velocity.x = -velocity.x * bounceFactor; // Reverse and dampen horizontal velocity
+        }
+    }
+
+    // Vertical wall collisions
+    if (velocity.y > 0) { // Moving down
+        if (generatedMaze[cellX][cellY].walls.bottom && (newY + ballRadius) > (cellY + 1) * cellSize) {
+            newY = (cellY + 1) * cellSize - ballRadius; // Move ball to the edge of the cell
+            velocity.y = -velocity.y * bounceFactor; // Reverse and dampen vertical velocity
+        }
+    } else if (velocity.y < 0) { // Moving up
+        if (generatedMaze[cellX][cellY].walls.top && (newY - ballRadius) < cellY * cellSize) {
+            newY = cellY * cellSize + ballRadius; // Move ball to the edge of the cell
+            velocity.y = -velocity.y * bounceFactor; // Reverse and dampen vertical velocity
+        }
+    }
+
+    return { newX, newY };
+}
+     
+ function ConfigureMaze(maze,cellSize,canvas,ctx){
         console.log(canvas)
         cols = Math.floor(canvas.width / cellSize);
         rows = Math.floor(canvas.height / cellSize);
@@ -171,10 +166,12 @@ document.addEventListener("DOMContentLoaded",()=>{
         ctx.fill();
         ctx.closePath();
         // Log the calculated position
+        //console.log(`Ball position: X=${player.position.c}, Y=${player.position.y}`);
 
         // Draw player's ball
         ctx.beginPath();
         ctx.arc(player.position.x,player.position.y, ballRadius, 0, Math.PI * 2);
+        console.log(`Drawing ball at position X:${player.position.x}, Y:${player.position.y}  `)
         ctx.fillStyle = player.colour;
         ctx.fill();
         ctx.closePath();
@@ -184,28 +181,29 @@ document.addEventListener("DOMContentLoaded",()=>{
         const now = Date.now();
         const deltaTime = (now - lastUpdate) / 1000; // Time in seconds
         lastUpdate = now;
-
-        // Update velocity using the acceleration
+    
+        // Update velocity using acceleration
         velocity.x += acceleration.x * deltaTime;
         velocity.y += acceleration.y * deltaTime;
-
+    
         // Apply friction to velocity
         velocity.x *= friction;
         velocity.y *= friction;
-
+    
         // Calculate new position
-        let newX = player.position.x/60 + velocity.x ;
-        let newY = player.position.y/60 + velocity.y;
-
+        let newX = player.position.x + velocity.x;
+        let newY = player.position.y + velocity.y;
+    
         // Check for collisions
         const correctedPosition = checkCollisions(player, newX, newY);
         newX = correctedPosition.newX;
         newY = correctedPosition.newY;
-
+    
         // Update player's position
         player.position.x = newX;
         player.position.y = newY;
     }
+    
     
     
     function LoadGame(game ) {
@@ -297,7 +295,9 @@ document.addEventListener("DOMContentLoaded",()=>{
 
      // Gyroscope data handling
      window.addEventListener('deviceorientation', (event) => {
-        acceleration.x = event.gamma /40 ; // Adjust sensitivity as needed
-        acceleration.y = event.beta / 40;  // Adjust sensitivity as needed
+        if (event.gamma !== null && event.beta !== null) {
+            acceleration.x = event.gamma; // Adjust sensitivity as needed
+            acceleration.y = event.beta;  // Adjust sensitivity as needed
+        }
     });    
 })

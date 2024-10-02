@@ -12,7 +12,7 @@ export class Player {
         this.acceleration = { x: 0, y: 0 };
         this.Totalscore = 10;
         this.hasReachedEnd = false;
-        this.position = { x: 30, y: 30 };
+        this.position = this.generateRandomStartPosition();
         this.colour = this.generateRandomColour();
         this.time = null;
     }
@@ -22,11 +22,18 @@ export class Player {
     }
     generateRandomStartPosition(canvasWidth = 780, canvasHeight = 600) {
         const ballRadius = canvasWidth / (BALL_RADIUS_FACTOR * 60); // Assuming cellSize is about 1/10 of canvas width
-        return {
-            x: Math.random() * (canvasWidth - 2 * ballRadius) + ballRadius,
-            y: Math.random() * (canvasHeight - 2 * ballRadius) + ballRadius
-        };
+        const corners = [
+            { x: ballRadius, y: ballRadius },                                    // Top-left corner
+            { x: canvasWidth - ballRadius, y: ballRadius },                      // Top-right corner
+            { x: ballRadius, y: canvasHeight - ballRadius },                     // Bottom-left corner
+            { x: canvasWidth - ballRadius, y: canvasHeight - ballRadius }        // Bottom-right corner
+        ];
+    
+        // Randomly pick one of the four corners
+        const randomCornerIndex = Math.floor(Math.random() * 4);
+        return corners[randomCornerIndex];
     }
+    
     
 
     incrementScore(points) {
@@ -45,24 +52,24 @@ export class Round {
 
     start() {
         this.isOngoing = true;
-      //  this.startTimer();
+       this.startTimer();
     }
 
     end() {
         this.isOngoing = false;
-        // this.endTime = new Date();
+         this.endTime = new Date();
     }
-    // startTimer() {
-    //     this.timer = setInterval(() => {
-    //         const timeLeft = this.roundEndTime - Date.now();
-    //         if (timeLeft < 0) {
-    //             clearInterval(this.timer);
-    //             this.end();
-    //         } else {
-    //             this.timer = Math.ceil(timeLeft / 1000);
-    //         }
-    //     }, 1000);
-    // }
+    startTimer() {
+        this.timer = setInterval(() => {
+            const timeLeft = this.roundEndTime - Date.now();
+            if (timeLeft < 0) {
+                clearInterval(this.timer);
+                this.end();
+            } else {
+                this.timer = Math.ceil(timeLeft / 1000);
+            }
+        }, 1000);
+    }
     
 }
 
