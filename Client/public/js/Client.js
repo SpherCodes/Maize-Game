@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     let end;
     let previous_positions = {};
     let sensitivity = 75;
+    let animationFrameId;
 
     // const ctx = canvas.getContext("2d");
     let cellSize;  // Adjust as needed
@@ -20,7 +21,8 @@ document.addEventListener("DOMContentLoaded",()=>{
     let endRadius ;
     let cols ;
     let rows  ;
-    let ctx;// Declare context globally
+    let ctx;
+
 
     // Define constants
     const MAZE_WIDTH = 780;
@@ -43,14 +45,76 @@ document.addEventListener("DOMContentLoaded",()=>{
         const player = new Player(gameId, _name);
         player.acceleration = acceleration;
         game .Addplayer(player)
-        game .Startgame();
+        game.Startgame();
         LoadGame(game );
+        
         
 
         // Update game status
         game .status = "in-progress";
       
-        requestAnimationFrame(() => animate(game ));  // Start animation loop
+        animationFrameId = requestAnimationFrame(() => animate(game));  // Store animation frame ID
+    }
+     // Function to restart the game
+     function restartGame(game) {
+        console.log("Restarting game...");
+        console.log("Current game state:", game); // Confirm game is defined and valid
+
+        let canvas = document.getElementById("ballCanvas");
+    
+        // Clear the canvas
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+        // Cancel the ongoing animation frame if it exists
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null; // Reset the animation frame ID
+        }
+    
+        // Ensure game.players exists and has at least one player before accessing
+        if (game && game.players && game.players.length > 0) {
+            // Start the game with the first player's name and game ID
+            startgame(game.players[0].name, game.gameId);
+        } else {
+            console.error("Players array is undefined or empty.");
+            return; // Exit early if players are not defined
+        }
+    
+        // Remove the game over container if it exists
+        const gameOverContainer = document.getElementById('game-over-container');
+        if (gameOverContainer) {
+            gameOverContainer.remove();
+        }
+    }
+    function NextRound(){
+        console.log("Restarting game...");
+        console.log("Current game state:", game); // Confirm game is defined and valid
+
+        let canvas = document.getElementById("ballCanvas");
+    
+        // Clear the canvas
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    
+        // Cancel the ongoing animation frame if it exists
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null; // Reset the animation frame ID
+        }
+        // Remove the Winner container if it exists
+        const gameOverContainer = document.getElementById('game-won-container');
+        if (gameOverContainer) {
+            gameOverContainer.remove();
+        }
+        startgame(game.players[0].name, game.gameId)
+    
+    }
+    
+
+    // Function to quit the game
+    function quitGame(game) {
+        console.log("Quitting game...");
+        game.StopGame();
+        window.location.href = 'index.html';
     }
 
     // Function to check collisions with maze walls
@@ -137,51 +201,72 @@ function checkCollisions(player, newX, newY) {
             }
         }
     }
-    function animate(game ) {
-        const player  = game .players[0];
-        
+    function animate(game) {
+        const player = game.players[0];
+    
         // Ensure player exists
         if (!player) {
             console.error("Player is undefined!");
             return;
         }
-        
-        drawBall(player);
-        updateBallPosition(player);
-        updategameinfo(game )
-        requestAnimationFrame(() => animate(game )); // Pass the game  object in recursive call
-    }
     
-   // Ball drawing function using the ballCanvas
-    let prev;
-    //let previousEndPoint = { x: null, y: null };
+        // Check if the current round is ongoing
+        if (game.currentRound.isOngoing) {
+            // Update ball position first
+            updateBallPosition(player, game);
+    
+            // Draw the ball after updating its position
+            drawBall(player);
+    
+            // Check win condition
+            if (checkWinCondition(player,game)) {
+                console.log(`Player ${player.name} has won!`);
+                game.hasWon();
+                GameWon(game); // Call to handle the winning scenario
+                return; // Exit the animation loop if the player has won
+            }
+        } else {
+            console.log(`Time up`);
+            GameOver(game);
+            return; // Exit the animation loop if the game is over
+        }
+    
+        // Update the game info (score, time left, etc.)
+        updategameinfo(game);
+    
+        // Call requestAnimationFrame to keep the animation going
+        requestAnimationFrame(() => animate(game)); // Pass the game object in recursive call
+    }    
+    
+    
+
     function drawBall(player) {
         let canvas = document.getElementById("ballCanvas");
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     
+        // Clear the canvas
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        
         // Draw end point
         ctx.beginPath();
         ctx.arc(end.x, end.y, endRadius, 0, Math.PI * 2);
         ctx.fillStyle = 'black';
         ctx.fill();
         ctx.closePath();
-        // Log the calculated position
-        //console.log(`Ball position: X=${player.position.c}, Y=${player.position.y}`);
-
+    
         // Draw player's ball
         ctx.beginPath();
-        ctx.arc(player.position.x,player.position.y, ballRadius, 0, Math.PI * 2);
-        console.log(`Drawing ball at position X:${player.position.x}, Y:${player.position.y}  `)
+        ctx.arc(player.position.x, player.position.y, ballRadius, 0, Math.PI * 2);
         ctx.fillStyle = player.colour;
         ctx.fill();
         ctx.closePath();
     }
     
-    function updateBallPosition(player) {
+    
+    function updateBallPosition(player,game) {
         const now = Date.now();
         const deltaTime = (now - lastUpdate) / 1000; // Time in seconds
         lastUpdate = now;
-    
+        
         // Update velocity using acceleration
         velocity.x += acceleration.x * deltaTime;
         velocity.y += acceleration.y * deltaTime;
@@ -204,11 +289,10 @@ function checkCollisions(player, newX, newY) {
         player.position.y = newY;
     }
     
-    
-    
     function LoadGame(game ) {
         // Generate the maze
         generatedMaze = GenerateMaze(780, 600);
+        console.log(generatedMaze)
         cellSize = generatedMaze[0][0].cellSize;
     
         document.getElementById('Login-Conteiner').style.display = 'none';
@@ -250,10 +334,92 @@ function checkCollisions(player, newX, newY) {
         document.getElementById('current-round').textContent = game .rounds.length;
        
     }
+    function GameOver(game) {
+        const gameContainer = document.getElementById('game-container');
+        
+        if (!gameContainer) {
+            console.error("gameContainer element not found!");
+            return;
+        }
+    
+        // Create the game over container
+        const container = document.createElement('div');
+        container.id = 'game-over-container'; // Correctly set the id attribute
+        
+        // Append the container to the game container
+        gameContainer.appendChild(container);
+        
+        // Create and append the "Game Over" heading
+        const GameOverHeading = document.createElement('h1');
+        GameOverHeading.textContent = "Game Over";
+        container.appendChild(GameOverHeading);
+    
+        // Create the "Play Again" button
+        const playAgainButton = document.createElement('button');
+        playAgainButton.textContent = "Play Again";
+        playAgainButton.onclick = () => {
+            // Call a function to restart the game
+            console.log(game)
+            restartGame(game);
+        };
+        container.appendChild(playAgainButton);
+    
+        // Create the "Quit" button
+        const quitButton = document.createElement('button');
+        quitButton.textContent = "Quit";
+        quitButton.onclick = () => {
+            quitGame(game);
+        };
+        container.appendChild(quitButton);
+    }
+    function checkWinCondition(player) {
+        const distance = Math.sqrt(
+            Math.pow(player.position.x - end.x, 2) + 
+            Math.pow(player.position.y - end.y, 2)
+        );
+        return distance <= ballRadius + endRadius; // Adjust condition based on ball and endpoint sizes
+    }    
+    function GameWon(game) {
+        const gameContainer = document.getElementById('game-container');
+    
+        if (!gameContainer) {
+            console.error("gameContainer element not found!");
+            return;
+        }
+    
+        // Create the game won container
+        const container = document.createElement('div');
+        container.id = 'game-won-container'; // Set a unique ID for the winning screen
+    
+        // Append the container to the game container
+        gameContainer.appendChild(container);
+    
+        // Create and append the "You Win!" heading
+        const winHeading = document.createElement('h1');
+        winHeading.textContent = `Congratulations You Win!`;
+        container.appendChild(winHeading);
+    
+        // Create the "Play Again" button
+        const playAgainButton = document.createElement('button');
+        playAgainButton.textContent = "Next round"
+        playAgainButton.onclick = () => {
+            restartGame(game); // Call a function to restart the game
+        };
+        container.appendChild(playAgainButton);
+    
+        // Create the "Quit" button
+        const quitButton = document.createElement('button');
+        quitButton.textContent = "Quit";
+        quitButton.onclick = () => {
+            quitGame(game);
+        };
+        container.appendChild(quitButton);
+    }    
+    
     function updategameinfo(game ){
         const currentRound = game .currentRound;
         document.getElementById('player-points').textContent = game .players[0].Totalscore;
-        document.getElementById('time-left').textContent = currentRound ? currentRound.timer : 0;
+        document.getElementById('time-left').textContent = currentRound ? currentRound.remainingTime : 0;
     }
     
     function isIOS() {
