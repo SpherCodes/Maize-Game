@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded",()=>{
             gameOverContainer.remove();
         }
     }
-    function NextRound(){
+    function NextRound(game){
         console.log("Restarting game...");
         console.log("Current game state:", game); // Confirm game is defined and valid
 
@@ -105,7 +105,10 @@ document.addEventListener("DOMContentLoaded",()=>{
         if (gameOverContainer) {
             gameOverContainer.remove();
         }
-        startgame(game.players[0].name, game.gameId)
+        game.startNewRound();
+        game.Startgame();
+        LoadGame(game );
+        animationFrameId = requestAnimationFrame(() => animate(game));  // Store animation frame ID
     
     }
     
@@ -291,7 +294,7 @@ function checkCollisions(player, newX, newY) {
     
     function LoadGame(game ) {
         // Generate the maze
-        generatedMaze = GenerateMaze(780, 600);
+        generatedMaze = GenerateMaze(780, 600,game.rounds.length);
         console.log(generatedMaze)
         cellSize = generatedMaze[0][0].cellSize;
     
@@ -403,7 +406,7 @@ function checkCollisions(player, newX, newY) {
         const playAgainButton = document.createElement('button');
         playAgainButton.textContent = "Next round"
         playAgainButton.onclick = () => {
-            restartGame(game); // Call a function to restart the game
+            NextRound(game); // Call a function to restart the game
         };
         container.appendChild(playAgainButton);
     
@@ -417,6 +420,7 @@ function checkCollisions(player, newX, newY) {
     }    
     
     function updategameinfo(game ){
+        console.log(game)
         const currentRound = game .currentRound;
         document.getElementById('player-points').textContent = game .players[0].Totalscore;
         document.getElementById('time-left').textContent = currentRound ? currentRound.remainingTime : 0;

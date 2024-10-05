@@ -3,7 +3,7 @@ const END_RADIUS_FACTOR = 3;
 const LINE_WIDTH = 5;
 
 export class Player {
-    constructor(gameId, name, currentRound) {
+    constructor(gameId, name) {
         this.gameId = gameId;
         this.name = name;
         this.velocity = { x: 0, y: 0 };
@@ -12,7 +12,6 @@ export class Player {
         this.hasReachedEnd = false;
         this.position = this.generateRandomStartPosition();
         this.colour = this.generateRandomColour();
-        this.currentRound = currentRound; // Store current round reference
     }
     
 
@@ -82,9 +81,7 @@ export class Game {
         this.players = [];
     }
 
-    Addplayer(playerName) {
-        // Create a new player with the current round reference
-        const player = new Player(this.id, playerName, this.currentRound);
+    Addplayer(player) {
         this.players.push(player);
     }
 
