@@ -41,20 +41,18 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
     });
     function startgame(_name, gameId) {
-        const game  = new Game(gameId);
-        const player = new Player(gameId, _name);
+        const game = new Game(gameId);
+        const player = new Player(gameId, _name)
+    
         player.acceleration = acceleration;
-        game .Addplayer(player)
+        game.Addplayer(player);
         game.Startgame();
-        LoadGame(game );
-        
-        
-
-        // Update game status
-        game .status = "in-progress";
-      
-        animationFrameId = requestAnimationFrame(() => animate(game));  // Store animation frame ID
+        LoadGame(game);
+    
+        game.status = "in-progress";
+        animationFrameId = requestAnimationFrame(() => animate(game));
     }
+    
      // Function to restart the game
      function restartGame(game) {
         console.log("Restarting game...");
@@ -89,7 +87,6 @@ document.addEventListener("DOMContentLoaded",()=>{
     function NextRound(game){
         console.log("Restarting game...");
         console.log("Current game state:", game); // Confirm game is defined and valid
-
         let canvas = document.getElementById("ballCanvas");
     
         // Clear the canvas
@@ -123,7 +120,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 function checkCollisions(player, newX, newY) {
     const cellX = Math.floor(player.position.x / cellSize);
     const cellY = Math.floor(player.position.y / cellSize);
-    let bounceFactor = 0.5; // Reduced bounce to prevent infinite bouncing
+    const bounceFactor = 1; // Dampen bounce slightly to avoid infinite bounces
 
     if (newX < 0 || newX >= cols * cellSize || newY < 0 || newY >= rows * cellSize) {
         return { newX: player.position.x, newY: player.position.y };
@@ -132,31 +129,32 @@ function checkCollisions(player, newX, newY) {
     // Horizontal wall collisions
     if (velocity.x > 0) { // Moving right
         if (generatedMaze[cellX][cellY].walls.right && (newX + ballRadius) > (cellX + 1) * cellSize) {
-            newX = (cellX + 1) * cellSize - ballRadius; // Move ball to the edge of the cell
-            velocity.x = -velocity.x * bounceFactor; // Reverse and dampen horizontal velocity
+            newX = (cellX + 1) * cellSize - ballRadius;
+            velocity.x = -velocity.x * bounceFactor; // Reverse horizontal velocity
         }
     } else if (velocity.x < 0) { // Moving left
         if (generatedMaze[cellX][cellY].walls.left && (newX - ballRadius) < cellX * cellSize) {
-            newX = cellX * cellSize + ballRadius; // Move ball to the edge of the cell
-            velocity.x = -velocity.x * bounceFactor; // Reverse and dampen horizontal velocity
+            newX = cellX * cellSize + ballRadius;
+            velocity.x = -velocity.x * bounceFactor;
         }
     }
 
     // Vertical wall collisions
     if (velocity.y > 0) { // Moving down
         if (generatedMaze[cellX][cellY].walls.bottom && (newY + ballRadius) > (cellY + 1) * cellSize) {
-            newY = (cellY + 1) * cellSize - ballRadius; // Move ball to the edge of the cell
-            velocity.y = -velocity.y * bounceFactor; // Reverse and dampen vertical velocity
+            newY = (cellY + 1) * cellSize - ballRadius;
+            velocity.y = -velocity.y * bounceFactor; // Reverse vertical velocity
         }
     } else if (velocity.y < 0) { // Moving up
         if (generatedMaze[cellX][cellY].walls.top && (newY - ballRadius) < cellY * cellSize) {
-            newY = cellY * cellSize + ballRadius; // Move ball to the edge of the cell
-            velocity.y = -velocity.y * bounceFactor; // Reverse and dampen vertical velocity
+            newY = cellY * cellSize + ballRadius;
+            velocity.y = -velocity.y * bounceFactor;
         }
     }
 
     return { newX, newY };
 }
+
      
  function ConfigureMaze(maze,cellSize,canvas,ctx){
         console.log(canvas)
