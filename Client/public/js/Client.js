@@ -105,7 +105,6 @@ document.addEventListener("DOMContentLoaded",()=>{
         if (gameOverContainer) {
             gameOverContainer.remove();
         }
-        game.startNewRound();
         game.Startgame();
         LoadGame(game );
         animationFrameId = requestAnimationFrame(() => animate(game));  // Store animation frame ID
@@ -404,10 +403,18 @@ function checkCollisions(player, newX, newY) {
     
         // Create the "Play Again" button
         const playAgainButton = document.createElement('button');
-        playAgainButton.textContent = "Next round"
-        playAgainButton.onclick = () => {
-            NextRound(game); // Call a function to restart the game
-        };
+       if(game.rounds.length <= 3){
+            playAgainButton.textContent = "Next round"
+            playAgainButton.onclick = () => {
+                NextRound(game); // Call a function to restart the game
+            };
+       }
+       else{
+        playAgainButton.textContent = "Play Again"
+            playAgainButton.onclick = () => {
+                restartGame(game); // Call a function to restart the game
+            };
+       }
         container.appendChild(playAgainButton);
     
         // Create the "Quit" button

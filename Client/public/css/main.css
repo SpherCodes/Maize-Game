@@ -13,8 +13,6 @@ body {
 .container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     max-width: 90%; /* Use a percentage for responsiveness */
     width: 400px; /* Fixed width for larger screens */
     height: auto; /* Height adjusts automatically */
@@ -30,14 +28,6 @@ body {
     text-align: center;
 }
 
-.container input {
-    width: 100%; /* Full width for mobile */
-    max-width: 300px; /* Maximum width for larger screens */
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    height: 1.5rem;
-}
 
 .container button {
     background-color: #007BFF;
@@ -63,6 +53,7 @@ body {
     justify-content: center; /* Center buttons horizontally */
     gap: 15px; /* Space between buttons */
     margin-top: 10px; /* Margin above the button section */
+    flex-direction: column;
 }
 
 #errorMessage {
@@ -74,11 +65,10 @@ body {
 #game-container {
     width: 100%; /* Full width for mobile */
     max-width: 600px; /* Maximum width for larger screens */
-    height: 60%;
     position: relative;
-    display: flex;
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
+    top: 15%;
 }
 
 canvas {
@@ -178,7 +168,8 @@ canvas#ballCanvas {
 
 .container input {
     flex: 1; /* Allow inputs to grow equally */
-    margin: 0 5px; /* Add margin between inputs */
+    width: 100%;
+    max-width: 45%;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
@@ -219,5 +210,27 @@ canvas#ballCanvas {
         width: 100%; /* Full width for buttons on very small screens */
         font-size: 16px; /* Adjust button font size */
     }
-
+    button#joinGame {
+        width: 60%;
+        margin: auto;
+        margin-top: 0.5rem;
+        height: 2.3rem;
+    }
+    button#becomeHost {
+        margin: auto;
+        max-width: 35%;
+    }
+    .container #permissionButton {
+        width: 100%;
+        margin-top: 10px;
+        max-width: 50%;
+        margin: auto;
+    }
+    .container input {
+        height: 2rem;
+    }
+    #joinButtonsection{
+        margin: auto;
+        gap: 6px;
+    }
 }
