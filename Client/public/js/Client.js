@@ -386,7 +386,7 @@ function checkCollisions(player, newX, newY) {
             console.error("gameContainer element not found!");
             return;
         }
-    
+        game.players[0].points  +=  game.Calculatepoints(game.players[0])
         // Create the game won container
         const container = document.createElement('div');
         container.id = 'game-won-container'; // Set a unique ID for the winning screen
@@ -401,7 +401,7 @@ function checkCollisions(player, newX, newY) {
     
         // Create the "Play Again" button
         const playAgainButton = document.createElement('button');
-       if(game.rounds.length <= 3){
+       if(game.rounds.length < 3){
             playAgainButton.textContent = "Next round"
             playAgainButton.onclick = () => {
                 NextRound(game); // Call a function to restart the game
@@ -427,7 +427,7 @@ function checkCollisions(player, newX, newY) {
     function updategameinfo(game ){
         console.log(game)
         const currentRound = game .currentRound;
-        document.getElementById('player-points').textContent = game .players[0].Totalscore;
+        document.getElementById('player-points').textContent = game .players[0].score;
         document.getElementById('time-left').textContent = currentRound ? currentRound.remainingTime : 0;
     }
     

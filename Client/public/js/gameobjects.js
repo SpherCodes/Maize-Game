@@ -8,7 +8,7 @@ export class Player {
         this.name = name;
         this.velocity = { x: 0, y: 0 };
         this.acceleration = { x: 0, y: 0 };
-        this.score = 0; // Use score instead of Totalscore
+        this.score = 0; 
         this.hasReachedEnd = false;
         this.position = this.generateRandomStartPosition();
         this.colour = this.generateRandomColour();
@@ -33,9 +33,6 @@ export class Player {
         return corners[randomCornerIndex];
     }
 
-    incrementScore(points) {
-        this.score += points;
-    }
 }
 
 export class Round {
@@ -43,7 +40,6 @@ export class Round {
         this.isOngoing = false;
         this.roundEndTime = 0;
         this.timer = null;
-        this.points = 0;
         this.game = game;
         this.remainingTime = 0;
     }
@@ -113,6 +109,20 @@ export class Game {
         const currentRound = this.rounds[this.rounds.length - 1];
         if (currentRound.isOngoing) {
             currentRound.end();
+        }
+    }
+    Calculatepoints(player){
+        if(this.rounds.length == 1){
+            player.score = 10;
+            return;
+        }
+        else if(this.rounds.length == 2){
+            player.score = 20;
+            return;
+        }
+        else if(this.rounds.length == 3){
+             player.score = 30;
+            return;
         }
     }
 
