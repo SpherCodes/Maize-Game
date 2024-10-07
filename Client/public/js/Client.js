@@ -30,14 +30,18 @@ document.addEventListener("DOMContentLoaded",()=>{
     const SENSITIVITY = 40;
     
 
-    document.getElementById("joinGame").addEventListener("click", () => {
-        const name = document.getElementById("username").value.trim();
-        const gameId = document.getElementById("gameId").value.trim();
-        console.log(name);
+    const joinGameButton = document.getElementById("joinGame");
+    const usernameInput = document.getElementById("username");
+    const gameIdInput = document.getElementById("gameId");
+    const errorMessage = document.getElementById("errorMessage");
+
+    joinGameButton.addEventListener("click", () => {
+        const name = usernameInput.value.trim();
+        const gameId = gameIdInput.value.trim();
         if (name && gameId) {
-            startgame(name,gameId)
+            startgame(name, gameId);
         } else {
-            document.getElementById("errorMessage").textContent = "Please enter both Game ID and Username";
+            errorMessage.textContent = "Please enter both Game ID and Username";
         }
     });
     function startgame(_name, gameId) {

@@ -216,10 +216,6 @@ canvas#ballCanvas {
         margin-top: 0.5rem;
         height: 2.3rem;
     }
-    button#becomeHost {
-        margin: auto;
-        max-width: 35%;
-    }
     .container #permissionButton {
         width: 100%;
         margin-top: 10px;
