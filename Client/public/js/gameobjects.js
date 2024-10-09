@@ -3,18 +3,20 @@ const END_RADIUS_FACTOR = 3;
 const LINE_WIDTH = 5;
 
 export class Player {
-    constructor(gameId, name) {
+    constructor(gameId, name,game) {
+        this.game = game;
         this.gameId = gameId;
         this.name = name;
         this.velocity = { x: 0, y: 0 };
         this.acceleration = { x: 0, y: 0 };
-        this.score = 0; 
+        this.lastUpdate = Date.now();
+        this.previousPosition = { x: 0, y: 0 };
+        this.score = 0;
         this.hasReachedEnd = false;
         this.position = this.generateRandomStartPosition();
         this.colour = this.generateRandomColour();
     }
     
-
     generateRandomColour() {
         return '#' + Math.floor(Math.random() * 16777215).toString(16);
     }
@@ -32,6 +34,39 @@ export class Player {
         const randomCornerIndex = Math.floor(Math.random() * 4);
         return corners[randomCornerIndex];
     }
+    updateBallPosition() {
+        const now = Date.now();
+        const deltaTime = (now - this.lastUpdate) / 1000;  // Use this.lastUpdate, not just lastUpdate
+        this.lastUpdate = now;
+
+        // Store the current position as the previous position
+        this.previousPosition.x = this.position.x;
+        this.previousPosition.y = this.position.y;
+        
+        // Update velocity using acceleration
+        this.velocity.x += this.acceleration.x * deltaTime;
+        this.velocity.y += this.acceleration.y * deltaTime;
+
+        const friction = 0.9;  // You can tweak friction or pass it as a parameter
+
+        // Apply friction to velocity
+        this.velocity.x *= friction;
+        this.velocity.y *= friction;
+
+        // Calculate new position
+        let newX = this.position.x + this.velocity.x;
+        let newY = this.position.y + this.velocity.y;
+
+        // Call the collision detection method from the Game class using the game reference
+        const correctedPosition = this.game.checkCollisions(this, newX, newY);
+        newX = correctedPosition.newX;
+        newY = correctedPosition.newY;
+
+        // Update player's position
+        this.position.x = newX;
+        this.position.y = newY;
+    }
+    
 
 }
 
@@ -75,6 +110,13 @@ export class Game {
         this.status = "waiting";
         this.currentRound = null;
         this.players = [];
+        this.endpoint =  null;
+        this.ballRadius = null;
+        this.maze = this.maze;
+        this.cols = null;
+        this.rows = null;
+        this.isOngoing = false;
+        this.hasReachedEnd = false;
     }
 
     Addplayer(player) {
@@ -92,8 +134,6 @@ export class Game {
     }
     hasWon(){
         this.hasReachedEnd = true;
-        console.log(this.currentRound)
-        //this.end();
     }
 
     startNewRound() {
@@ -136,4 +176,51 @@ export class Game {
         }
         return 120;  // Default time for any extra rounds, if needed
     }
+    checkWinCondition(player) {
+        const distance = Math.sqrt(
+            
+            Math.pow(player.position.x - this.endpoint.x, 2) + 
+            Math.pow(player.position.y - this.endpoint.y, 2)
+        );
+        return distance <= this.ballRadius + this.endRadius;
+    }
+    checkCollisions(player, newX, newY) {
+        const cellSize = this.maze[0][0].cellSize;
+        const cellX = Math.floor(player.position.x / cellSize);
+        const cellY = Math.floor(player.position.y / cellSize);
+        const bounceFactor = 1; // Dampen bounce slightly to avoid infinite bounces
+    
+        if (newX < 0 || newX >= this.cols * cellSize || newY < 0 || newY >= this.rows * cellSize) {
+            return { newX: player.position.x, newY: player.position.y };
+        }
+    
+        // Horizontal wall collisions
+        if (player.velocity.x > 0) { // Moving right
+            if (this.maze[cellX][cellY].walls.right && (newX + this.ballRadius) > (cellX + 1) * cellSize) {
+                newX = (cellX + 1) * cellSize - this.ballRadius;
+                player.velocity.x = -player.velocity.x * bounceFactor; // Reverse horizontal velocity
+            }
+        } else if (player.velocity.x < 0) { // Moving left
+            if (this.maze[cellX][cellY].walls.left && (newX - this.ballRadius) < cellX * cellSize) {
+                newX = cellX * cellSize + this.ballRadius;
+                player.velocity.x = -player.velocity.x * bounceFactor;
+            }
+        }
+    
+        // Vertical wall collisions
+        if (player.velocity.y > 0) { // Moving down
+            if (this.maze[cellX][cellY].walls.bottom && (newY + this.ballRadius) > (cellY + 1) * cellSize) {
+                newY = (cellY + 1) * cellSize - this.ballRadius;
+                player.velocity.y = -player.velocity.y * bounceFactor; // Reverse vertical velocity
+            }
+        } else if (player.velocity.y < 0) { // Moving up
+            if (this.maze[cellX][cellY].walls.top && (newY - this.ballRadius) < cellY * cellSize) {
+                newY = cellY * cellSize + this.ballRadius;
+                player.velocity.y = -player.velocity.y * bounceFactor;
+            }
+        }
+    
+        return { newX, newY };
+    }
+    
 }

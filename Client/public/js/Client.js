@@ -1,9 +1,10 @@
 import { GenerateMaze } from "./maze_generation.js";
 import { Player,Game} from "./gameobjects.js";
-// import { startBackgroundAnimation } from './Backgroundanimation.js';
+import { UI } from "./UI.js";
 
 document.addEventListener("DOMContentLoaded",()=>{
-    //startBackgroundAnimation('backgroundCanvas');
+
+
     // Game state variables
     let generatedMaze;
     let velocity = { x: 0, y: 0 };
@@ -46,7 +47,8 @@ document.addEventListener("DOMContentLoaded",()=>{
     });
     function startgame(_name, gameId) {
         const game = new Game(gameId);
-        const player = new Player(gameId, _name)
+        const player = new Player(gameId, _name);
+        const UI =  new UI(game,player);
     
         player.acceleration = acceleration;
         game.Addplayer(player);
@@ -266,7 +268,7 @@ function checkCollisions(player, newX, newY) {
     }
     
     
-    function updateBallPosition(player,game) {
+    function updateBallPosition(player) {
         const now = Date.now();
         const deltaTime = (now - lastUpdate) / 1000; // Time in seconds
         lastUpdate = now;
@@ -473,7 +475,7 @@ function checkCollisions(player, newX, newY) {
     }
 
      // Gyroscope data handling
-     window.addEventListener('deviceorientation', (event) => {
+    window.addEventListener('deviceorientation', (event) => {
         if (event.gamma !== null && event.beta !== null) {
             acceleration.x = event.gamma; // Adjust sensitivity as needed
             acceleration.y = event.beta;  // Adjust sensitivity as needed
