@@ -105,11 +105,14 @@ document.addEventListener("DOMContentLoaded",()=>{
         // Remove the Winner container if it exists
         const winnerContainer = document.getElementById('game-won-container');
         if (winnerContainer) {
-            console.log("Removing winner container");
-            winnerContainer.style.display = 'none';
-            winnerContainer.remove(); // Ensure the winner container is removed
-            
+            console.log('Removing winner container');
+            winnerContainer.remove();
+        } else {
+            console.log('Winner container not found');
         }
+
+        console.log("Winner container found:", winnerContainer);
+
     
         // Use setTimeout to delay the start of the next round
         setTimeout(() => {
@@ -251,8 +254,6 @@ function checkCollisions(player, newX, newY) {
         requestAnimationFrame(() => animate(game)); // Pass the game object in recursive call
     }    
     
-    
-
     function drawBall(player) {
         let canvas = document.getElementById("ballCanvas");
     
@@ -401,9 +402,10 @@ function checkCollisions(player, newX, newY) {
         }
         game.players[0].points  +=  game.Calculatepoints(game.players[0])
         // Create the game won container
+        console.log('creating winner container')
         const container = document.createElement('div');
-        container.id = 'game-won-container'; // Set a unique ID for the winning screen
-        container.style.display = 'block'
+        gameContainer.appendChild(container);
+        container.id = 'game-won-container'; 
     
         // Append the container to the game container
         gameContainer.appendChild(container);
@@ -415,7 +417,7 @@ function checkCollisions(player, newX, newY) {
     
         // Create the "Play Again" button
         const playAgainButton = document.createElement('button');
-       if(game.rounds.length < 3){
+       if(game.rounds.length < 2){
             playAgainButton.textContent = "Next round"
             playAgainButton.onclick = () => {
                 NextRound(game); // Call a function to restart the game
@@ -439,7 +441,7 @@ function checkCollisions(player, newX, newY) {
     }    
     
     function updategameinfo(game ){
-        console.log(game)
+        //console.log(game)
         const currentRound = game .currentRound;
         document.getElementById('player-points').textContent = game .players[0].score;
         document.getElementById('time-left').textContent = currentRound ? currentRound.remainingTime : 0;
