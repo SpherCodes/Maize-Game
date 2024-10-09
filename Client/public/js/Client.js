@@ -1,9 +1,7 @@
 import { GenerateMaze } from "./maze_generation.js";
 import { Player,Game} from "./gameobjects.js";
-// import { startBackgroundAnimation } from './Backgroundanimation.js';
 
 document.addEventListener("DOMContentLoaded",()=>{
-    //startBackgroundAnimation('backgroundCanvas');
     // Game state variables
     let generatedMaze;
     let velocity = { x: 0, y: 0 };
@@ -11,8 +9,6 @@ document.addEventListener("DOMContentLoaded",()=>{
     const friction = 0.8;
     let lastUpdate = Date.now();
     let end;
-    let previous_positions = {};
-    let sensitivity = 75;
     let animationFrameId;
 
     // const ctx = canvas.getContext("2d");
@@ -23,13 +19,10 @@ document.addEventListener("DOMContentLoaded",()=>{
     let rows  ;
     let ctx;
 
-
     // Define constants
     const MAZE_WIDTH = 780;
     const MAZE_HEIGHT = 600;
-    const SENSITIVITY = 40;
     
-
     const joinGameButton = document.getElementById("joinGame");
     const usernameInput = document.getElementById("username");
     const gameIdInput = document.getElementById("gameId");
@@ -60,7 +53,7 @@ document.addEventListener("DOMContentLoaded",()=>{
      // Function to restart the game
      function restartGame(game) {
         console.log("Restarting game...");
-        console.log("Current game state:", game); // Confirm game is defined and valid
+        console.log("Current game state:", game); 
 
         let canvas = document.getElementById("ballCanvas");
     
@@ -123,36 +116,33 @@ document.addEventListener("DOMContentLoaded",()=>{
         animationFrameId = requestAnimationFrame(() => animate(game));  // Store animation frame ID
     }
     
-    
-
     // Function to quit the game
     function quitGame(game) {
         console.log("Quitting game...");
         game.StopGame();
         window.location.href = 'index.html';
     }
-
     // Function to check collisions with maze walls
-function checkCollisions(player, newX, newY) {
-    const cellX = Math.floor(player.position.x / cellSize);
-    const cellY = Math.floor(player.position.y / cellSize);
-    const bounceFactor = 1; // Dampen bounce slightly to avoid infinite bounces
+    function checkCollisions(player, newX, newY) {
+        const cellX = Math.floor(player.position.x / cellSize);
+        const cellY = Math.floor(player.position.y / cellSize);
+        const bounceFactor = 1; // Dampen bounce slightly to avoid infinite bounces
 
-    if (newX < 0 || newX >= cols * cellSize || newY < 0 || newY >= rows * cellSize) {
-        return { newX: player.position.x, newY: player.position.y };
-    }
+        if (newX < 0 || newX >= cols * cellSize || newY < 0 || newY >= rows * cellSize) {
+            return { newX: player.position.x, newY: player.position.y };
+        }
 
-    // Horizontal wall collisions
-    if (velocity.x > 0) { // Moving right
-        if (generatedMaze[cellX][cellY].walls.right && (newX + ballRadius) > (cellX + 1) * cellSize) {
-            newX = (cellX + 1) * cellSize - ballRadius;
-            velocity.x = -velocity.x * bounceFactor; // Reverse horizontal velocity
-        }
-    } else if (velocity.x < 0) { // Moving left
-        if (generatedMaze[cellX][cellY].walls.left && (newX - ballRadius) < cellX * cellSize) {
-            newX = cellX * cellSize + ballRadius;
-            velocity.x = -velocity.x * bounceFactor;
-        }
+        // Horizontal wall collisions
+        if (velocity.x > 0) { // Moving right
+            if (generatedMaze[cellX][cellY].walls.right && (newX + ballRadius) > (cellX + 1) * cellSize) {
+                newX = (cellX + 1) * cellSize - ballRadius;
+                velocity.x = -velocity.x * bounceFactor; // Reverse horizontal velocity
+            }
+        } else if (velocity.x < 0) { // Moving left
+            if (generatedMaze[cellX][cellY].walls.left && (newX - ballRadius) < cellX * cellSize) {
+                newX = cellX * cellSize + ballRadius;
+                velocity.x = -velocity.x * bounceFactor;
+            }
     }
 
     // Vertical wall collisions
@@ -238,8 +228,8 @@ function checkCollisions(player, newX, newY) {
             if (checkWinCondition(player,game)) {
                 console.log(`Player ${player.name} has won!`);
                 game.hasWon();
-                GameWon(game); // Call to handle the winning scenario
-                return; // Exit the animation loop if the player has won
+                GameWon(game); 
+                return; 
             }
         } else {
             console.log(`Time up`);
@@ -441,12 +431,29 @@ function GameWon(game) {
     winnerContainer.appendChild(quitButton);
 }  
     
-    function updategameinfo(game ){
-        //console.log(game)
-        const currentRound = game .currentRound;
-        document.getElementById('player-points').textContent = game .players[0].score;
-        document.getElementById('time-left').textContent = currentRound ? currentRound.remainingTime : 0;
+function updategameinfo(game) {
+    const currentRound = game.currentRound;
+
+    // Update player's score
+    document.getElementById('player-points').textContent = game.players[0].score;
+
+    // Update the remaining time
+    if (currentRound && typeof currentRound.remainingTime !== 'undefined') {
+        document.getElementById('time-left').textContent = currentRound.remainingTime;
+
+        // Change color to red if time is less than 20 seconds
+        if (currentRound.remainingTime < 20) {
+            document.getElementById('time-left').style.color = 'red';
+        } else {
+            // Reset the color when time is more than 20 seconds
+            document.getElementById('time-left').style.color = 'black';
+        }
+    } else {
+        document.getElementById('time-left').textContent = 0;
+        document.getElementById('time-left').style.color = 'black'; // Reset to default color
     }
+}
+
     
     function isIOS() {
         // Check if the user agent contains 'iPhone', 'iPad', or 'iPod'

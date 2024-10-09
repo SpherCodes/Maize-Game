@@ -68,7 +68,6 @@ export class Round {
                 this.end();
             } else {
                 this.remainingTime = Math.ceil(timeLeft / 1000);
-                
             }
         }, 1000);
     }
@@ -89,9 +88,7 @@ export class Game {
 
     Startgame() {
         this.startNewRound();
-        this.resetPlayerPositions();  // Reset positions at the start of the game
-        // this.players[0].velocity = { x: 0, y: 0 };
-        // this.players[0].acceleration = { x: 0, y: 0 };
+        this.resetPlayerPositions();
         this.status = "Ongoing";
     }
 
