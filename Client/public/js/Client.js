@@ -88,11 +88,11 @@ document.addEventListener("DOMContentLoaded",()=>{
             gameOverContainer.remove();
         }
     }
-    function NextRound(game){
-        console.log("Restarting game...");
-        console.log("Current game state:", game); // Confirm game is defined and valid
+    function NextRound(game) {
+        console.log("Starting next round...");
+        
         let canvas = document.getElementById("ballCanvas");
-    
+        
         // Clear the canvas
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     
@@ -101,16 +101,25 @@ document.addEventListener("DOMContentLoaded",()=>{
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null; // Reset the animation frame ID
         }
-        // Remove the Winner container if it exists
-        const gameOverContainer = document.getElementById('game-won-container');
-        if (gameOverContainer) {
-            gameOverContainer.remove();
-        }
-        game.Startgame();
-        LoadGame(game );
-        animationFrameId = requestAnimationFrame(() => animate(game));  // Store animation frame ID
     
+        // Remove the Winner container if it exists
+        const winnerContainer = document.getElementById('game-won-container');
+        if (winnerContainer) {
+            console.log("Removing winner container");
+            winnerContainer.style.display = 'none';
+            winnerContainer.remove(); // Ensure the winner container is removed
+            
+        }
+    
+        // Use setTimeout to delay the start of the next round
+        setTimeout(() => {
+            // Start the next round of the game
+            game.Startgame();
+            LoadGame(game);
+            animationFrameId = requestAnimationFrame(() => animate(game));  // Store animation frame ID
+        }, 100); // Adjust the delay time (in milliseconds) as needed
     }
+    
     
 
     // Function to quit the game
@@ -394,6 +403,7 @@ function checkCollisions(player, newX, newY) {
         // Create the game won container
         const container = document.createElement('div');
         container.id = 'game-won-container'; // Set a unique ID for the winning screen
+        container.style.display = 'block'
     
         // Append the container to the game container
         gameContainer.appendChild(container);

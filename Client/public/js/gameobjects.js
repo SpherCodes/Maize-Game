@@ -20,18 +20,21 @@ export class Player {
     }
 
     generateRandomStartPosition(canvasWidth = 780, canvasHeight = 600) {
-        const ballRadius = canvasWidth / (BALL_RADIUS_FACTOR * 60); // Assuming cellSize is about 1/10 of canvas width
+        const ballRadius = canvasWidth / (BALL_RADIUS_FACTOR * 10);  // Adjusted to scale properly with canvas size
+        const padding = ballRadius + 10;  // Additional padding to avoid boundary issues
+    
         const corners = [
-            { x: ballRadius, y: ballRadius },                                    // Top-left corner
-            { x: canvasWidth - ballRadius, y: ballRadius },                      // Top-right corner
-            { x: ballRadius, y: canvasHeight - ballRadius },                     // Bottom-left corner
-            { x: canvasWidth - ballRadius, y: canvasHeight - ballRadius }        // Bottom-right corner
+            { x: padding, y: padding },                                     // Top-left corner
+            { x: canvasWidth - padding, y: padding },                       // Top-right corner
+            { x: padding, y: canvasHeight - padding },                      // Bottom-left corner
+            { x: canvasWidth - padding, y: canvasHeight - padding }         // Bottom-right corner
         ];
-
+    
         // Randomly pick one of the four corners
         const randomCornerIndex = Math.floor(Math.random() * 4);
         return corners[randomCornerIndex];
     }
+    
 
 }
 
@@ -46,6 +49,9 @@ export class Round {
 
     start() {
         this.isOngoing = true;
+        if(this.rounds > 0){
+            this.position = generateRandomStartPosition();
+        }
         this.startTimer();
     }
 

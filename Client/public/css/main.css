@@ -31,6 +31,7 @@ body {
 
 .container button {
     background-color: #007BFF;
+    margin: auto;
     color: white;
     border: none;
     border-radius: 5px;
@@ -41,6 +42,21 @@ body {
     cursor: pointer;
     justify-content: center;
     transition: background-color 0.3s, transform 0.3s;
+}
+.container button#startButton {
+    background-color: #007BFF; /* Button background color */
+    color: white; /* Button text color */
+    border: none; /* No border */
+    border-radius: 50%; /* Make it round */
+    padding: 0; /* No padding to keep it perfectly round */
+    font-size: 1rem; /* Adjust font size as needed */
+    display: flex; /* Use flexbox to center the text */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    width: 50px; /* Set width */
+    height: 50px; /* Set height equal to width for a circle */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s, transform 0.3s; /* Transition effects */
 }
 
 .container button:active {
