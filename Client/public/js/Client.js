@@ -72,6 +72,13 @@ document.addEventListener("DOMContentLoaded",()=>{
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null; // Reset the animation frame ID
         }
+        if (winnerContainer) {
+            console.log('Removing winner container');
+            winnerContainer.parentNode.removeChild(winnerContainer);
+            winnerContainer = null;
+        } else {
+            console.log('Winner container not found');
+        }
     
         // Ensure game.players exists and has at least one player before accessing
         if (game && game.players && game.players.length > 0) {
@@ -95,32 +102,25 @@ document.addEventListener("DOMContentLoaded",()=>{
         
         // Clear the canvas
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    
+        
         // Cancel the ongoing animation frame if it exists
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null; // Reset the animation frame ID
         }
-    
-        // Remove the Winner container if it exists
-        const winnerContainer = document.getElementById('game-won-container');
+        let winnerContainer = document.getElementById("game-won-container")
         if (winnerContainer) {
             console.log('Removing winner container');
-            winnerContainer.remove();
+            winnerContainer.parentNode.removeChild(winnerContainer);
+            winnerContainer = null;
         } else {
             console.log('Winner container not found');
         }
-
-        console.log("Winner container found:", winnerContainer);
-
-    
-        // Use setTimeout to delay the start of the next round
-        setTimeout(() => {
-            // Start the next round of the game
-            game.Startgame();
-            LoadGame(game);
-            animationFrameId = requestAnimationFrame(() => animate(game));  // Store animation frame ID
-        }, 100); // Adjust the delay time (in milliseconds) as needed
+        
+        // Start the next round of the game
+        game.Startgame();
+        LoadGame(game);
+        animationFrameId = requestAnimationFrame(() => animate(game));  // Store animation frame ID
     }
     
     
@@ -393,52 +393,53 @@ function checkCollisions(player, newX, newY) {
         );
         return distance <= ballRadius + endRadius; // Adjust condition based on ball and endpoint sizes
     }    
-    function GameWon(game) {
-        const gameContainer = document.getElementById('game-container');
+    let winnerContainer;
+
+function GameWon(game) {
+    const gameContainer = document.getElementById('game-container');
     
-        if (!gameContainer) {
-            console.error("gameContainer element not found!");
-            return;
-        }
-        game.players[0].points  +=  game.Calculatepoints(game.players[0])
-        // Create the game won container
-        console.log('creating winner container')
-        const container = document.createElement('div');
-        gameContainer.appendChild(container);
-        container.id = 'game-won-container'; 
-    
-        // Append the container to the game container
-        gameContainer.appendChild(container);
-    
-        // Create and append the "You Win!" heading
-        const winHeading = document.createElement('h1');
-        winHeading.textContent = `Congratulations You Win!`;
-        container.appendChild(winHeading);
-    
-        // Create the "Play Again" button
-        const playAgainButton = document.createElement('button');
-       if(game.rounds.length < 2){
-            playAgainButton.textContent = "Next round"
-            playAgainButton.onclick = () => {
-                NextRound(game); // Call a function to restart the game
-            };
-       }
-       else{
-        playAgainButton.textContent = "Play Again"
-            playAgainButton.onclick = () => {
-                restartGame(game); // Call a function to restart the game
-            };
-       }
-        container.appendChild(playAgainButton);
-    
-        // Create the "Quit" button
-        const quitButton = document.createElement('button');
-        quitButton.textContent = "Quit";
-        quitButton.onclick = () => {
-            quitGame(game);
+    if (!gameContainer) {
+        console.error("gameContainer element not found!");
+        return;
+    }
+    game.players[0].points  +=  game.Calculatepoints(game.players[0])
+    // Create the game won container
+    console.log('creating winner container')
+    winnerContainer = document.createElement('div');
+    gameContainer.appendChild(winnerContainer);
+    winnerContainer.id = 'game-won-container';
+
+    // Append the container to the game container
+    gameContainer.appendChild(winnerContainer);
+
+    // Create and append the "You Win!" heading
+    const winHeading = document.createElement('h1');
+    winHeading.textContent = `Congratulations You Win!`;
+    winnerContainer.appendChild(winHeading);
+
+    // Create the "Play Again" button
+    const playAgainButton = document.createElement('button');
+    if(game.rounds.length < 3){
+        playAgainButton.textContent = "Next round"
+        playAgainButton.onclick = () => {
+            NextRound(game); // Call a function to restart the game
         };
-        container.appendChild(quitButton);
-    }    
+    } else {
+        playAgainButton.textContent = "Play Again"
+        playAgainButton.onclick = () => {
+            restartGame(game); // Call a function to restart the game
+        };
+    }
+    winnerContainer.appendChild(playAgainButton);
+
+    // Create the "Quit" button
+    const quitButton = document.createElement('button');
+    quitButton.textContent = "Quit";
+    quitButton.onclick = () => {
+        quitGame(game);
+    };
+    winnerContainer.appendChild(quitButton);
+}  
     
     function updategameinfo(game ){
         //console.log(game)

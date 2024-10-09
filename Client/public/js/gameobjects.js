@@ -89,6 +89,8 @@ export class Game {
 
     Startgame() {
         this.startNewRound();
+        this.players[0].velocity = { x: 0, y: 0 };
+        this.players[0].acceleration = { x: 0, y: 0 };
         this.status = "Ongoing";
     }
 
