@@ -89,8 +89,9 @@ export class Game {
 
     Startgame() {
         this.startNewRound();
-        this.players[0].velocity = { x: 0, y: 0 };
-        this.players[0].acceleration = { x: 0, y: 0 };
+        this.resetPlayerPositions();  // Reset positions at the start of the game
+        // this.players[0].velocity = { x: 0, y: 0 };
+        // this.players[0].acceleration = { x: 0, y: 0 };
         this.status = "Ongoing";
     }
 
@@ -98,10 +99,10 @@ export class Game {
         this.status = "stopped";
         this.isOngoing = false;
     }
-    hasWon(){
+
+    hasWon() {
         this.hasReachedEnd = true;
-        console.log(this.currentRound)
-        //this.end();
+        console.log(this.currentRound);
     }
 
     startNewRound() {
@@ -111,6 +112,15 @@ export class Game {
         this.currentRound = newRound;
         this.rounds.push(newRound);
         newRound.start();  // Start the round timer
+
+        this.resetPlayerPositions();  // Reset positions at the start of every new round
+    }
+
+    resetPlayerPositions() {
+        this.players.forEach(player => {
+            player.position = player.generateRandomStartPosition();  // Reset each player's position
+        });
+        console.log('Player positions reset for the new round.');
     }
 
     endCurrentRound() {
@@ -119,29 +129,29 @@ export class Game {
             currentRound.end();
         }
     }
-    Calculatepoints(player){
-        if(this.rounds.length == 1){
+
+    Calculatepoints(player) {
+        if (this.rounds.length == 1) {
             player.score = 10;
             return;
-        }
-        else if(this.rounds.length == 2){
+        } else if (this.rounds.length == 2) {
             player.score = 20;
             return;
-        }
-        else if(this.rounds.length == 3){
-             player.score = 30;
+        } else if (this.rounds.length == 3) {
+            player.score = 30;
             return;
         }
     }
 
     calculateroundtime() {
         if (this.rounds.length === 0) {
-            return 60;  // 2 minutes for round 1
+            return 60;  // 1 minute for round 1
         } else if (this.rounds.length === 1) {
-            return 120;   // 1.5 minutes for round 2
+            return 120;   // 2 minutes for round 2
         } else if (this.rounds.length === 2) {
-            return 180;   // 1 minute for round 3
+            return 180;   // 3 minutes for round 3
         }
         return 120;  // Default time for any extra rounds, if needed
     }
 }
+
