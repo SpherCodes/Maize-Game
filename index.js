@@ -13,7 +13,7 @@ app.use('/images', express.static(path.join(__dirname, 'Client/images')));
 
 
 // Explicitly serve the images folder
-app.use('/images', express.static(path.join(__dirname, 'images')));  // Add this line
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 console.log(__dirname);  // Outputs the directory where the script is located
 

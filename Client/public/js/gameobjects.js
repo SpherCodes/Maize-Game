@@ -1,6 +1,4 @@
 const BALL_RADIUS_FACTOR = 4;
-const END_RADIUS_FACTOR = 3;
-const LINE_WIDTH = 5;
 
 export class Player {
     constructor(gameId, name) {
